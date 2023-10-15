@@ -1,4 +1,7 @@
+<!-- src/routes/index.svelte -->
 <script>
+    import Navbar from '$lib/Navbar.svelte';
+    
     import { onMount } from 'svelte';
 
     let posts = [];
@@ -8,6 +11,8 @@
         posts = await response.json();
     });
 </script>
+  
+<Navbar />
 
 <ul>
     {#each posts as post (post.id)}

@@ -1,14 +1,6 @@
-<!-- Header using Bootstrap styling -->
-<div class="jumbotron jumbotron-fluid bg-primary text-white">
-    <div class="container">
-        <h1 class="display-4">Welcome to Alcedo KYC</h1>
-        <p class="lead">The leading know your customer tool</p>
-    </div>
-</div>
 
-<script context="module">
-    export const prerender = true;
-
+<script>
+    import Navbar from '$lib/Navbar.svelte';    
     let searchQuery = "Search input here";
     let results = []; // An array to store the results
     let jaroWinklerDistance = 75; // Default value
@@ -101,15 +93,16 @@
         ]
     }
 </script>
+  
+<Navbar />
 
-
-<style>
-    /* Custom styles if needed */
-    .results-window {
-        height: 700px;
-        overflow-y: auto;
-    }
-</style>
+<!-- Header using Bootstrap styling -->
+<div class="jumbotron jumbotron-fluid bg-primary text-white">
+    <div class="container">
+        <h1 class="display-4">Welcome to Alcedo KYC</h1>
+        <p class="lead">The leading know your customer tool</p>
+    </div>
+</div>
 
 <div class="container mt-4">
     <!-- Updated Search Bar -->
@@ -183,3 +176,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Custom styles if needed */
+    .results-window {
+        height: 700px;
+        overflow-y: auto;
+    }
+</style>
