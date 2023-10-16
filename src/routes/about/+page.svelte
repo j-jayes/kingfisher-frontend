@@ -4,7 +4,7 @@
 
 <Navbar />
 
-<div class="about">
+<div class="container mt-5">
 	<section>
 		<h2>Alcedo: The Premier Financial Screening Tool</h2>
 		<p>
@@ -82,13 +82,3 @@
 	</section>
 </div>
 
-<style>
-	.about {
-		margin: 0 auto;
-		width: 80%;
-		padding: 20px;
-		background-color: #fff;
-		border-radius: 10px;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	}
-</style>

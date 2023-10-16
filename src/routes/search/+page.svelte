@@ -5,6 +5,7 @@
     let currentDate = new Date().toLocaleString();
     let name = '';
     let threshold = 85; // Default value
+    // @ts-ignore
     let results = [];
     let loading = false;
     let errorMessage = '';
@@ -39,6 +40,7 @@
             }
 
             const data = await res.json();
+            // @ts-ignore
             results = data.local_search_results.map(item => ({
                 ...item,
                 code: generateCode(),
