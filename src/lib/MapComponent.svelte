@@ -10,7 +10,7 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
   
-      L.marker([49.1833, -2.1006]).addTo(map)
+      L.marker([49.4482, -2.5895]).addTo(map)
         .bindPopup('Guernsey')
         .openPopup();
     });
