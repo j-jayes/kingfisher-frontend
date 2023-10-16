@@ -23,4 +23,7 @@
 		height: 50px;
 		width: 50px;
 	}
+	.navbar-nav .nav-link:hover {
+		color: var(--bs-primary) !important;
+	}
 </style>

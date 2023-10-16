@@ -9,6 +9,8 @@
     let results = [];
     let loading = false;
     let errorMessage = '';
+    let searchInitiated = false;  // New state variable to track if a search has been initiated
+    let comments = ''; // to bind to the textarea
 
     const sanctionsListLinks = {
         'US': 'https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists',
@@ -27,9 +29,16 @@
         }
         return result;
     }
+
+    function autoExpand(element) {
+        element.style.height = 'auto';
+        element.style.height = (element.scrollHeight) + 'px';
+    }
+
   
     async function searchSanctions() {
         loading = true;
+        searchInitiated = true;  // Mark that a search has been initiated
         errorMessage = '';  // Clear any previous error message
 
         try {
@@ -101,7 +110,13 @@
             <div class="mb-3">
                 <strong>Date & Time:</strong> {currentDate}
             </div>
-
+        
+            <!-- Comments Textbox -->
+            <div class="mb-3">
+                <label for="analystComments" class="form-label">Analyst Comments:</label>
+                <textarea id="analystComments" bind:value={comments} on:input={(e) => autoExpand(e.target)} class="form-control" rows="2" placeholder="Enter your comments here..."></textarea>
+            </div>
+        
             <!-- Error Message -->
             {#if errorMessage}
                 <div class="alert alert-danger" role="alert">
@@ -109,51 +124,58 @@
                 </div>
             {/if}
 
-            {#if !loading && results.length}
-                <div class="mb-2 d-flex justify-content-between">
-                    <button class="btn btn-outline-info" on:click={reorderRows}>Reorder Rows</button>
-                  <!--  <button class="btn btn-outline-success" on:click={downloadPDF}>Download results to PDF</button> -->
-                </div>
+            {#if !loading}
+                {#if results.length}
+                    <div class="mb-2 d-flex justify-content-between">
+                        <button class="btn btn-outline-info" on:click={reorderRows}>Reorder Rows</button>
+                    <!--  <button class="btn btn-outline-success" on:click={downloadPDF}>Download results to PDF</button> -->
+                    </div>
 
-                <!-- Display Results in a Table format -->
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Sanction Regime</th>
-                            <th>Sanctions List</th>
-                            <th>Date of Birth</th>
-                            <th>Country</th>
-                            <th>Similarity</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each results as result, index}
-                            <tr class="{result.isConcerning ? 'table-danger' : ''}">
-                                <td>{result.code}</td>
-                                <td>{result.full_name}</td>
-                                <td>{result.sanction_regime}</td>
-                                <td>
-                                    {#if sanctionsListLinks[result.sanctions_list]}
-                                        <a href={sanctionsListLinks[result.sanctions_list]} target="_blank" rel="noopener noreferrer">{result.sanctions_list}</a>
-                                    {:else}
-                                        {result.sanctions_list}
-                                    {/if}
-                                </td>
-                                <td>{result.year_of_birth}</td>
-                                <td>{result.country_of_birth}</td>
-                                <td>{result.similarity}%</td>
-                                <td>
-                                    <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>
-                                        {result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
-                                    </button>
-                                </td>
+                    <!-- Display Results in a Table format -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Sanction Regime</th>
+                                <th>Sanctions List</th>
+                                <th>Date of Birth</th>
+                                <th>Country</th>
+                                <th>Similarity</th>
+                                <th>Action</th>
                             </tr>
-                        {/each}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {#each results as result, index}
+                                <tr class="{result.isConcerning ? 'table-danger' : ''}">
+                                    <td>{result.code}</td>
+                                    <td>{result.full_name}</td>
+                                    <td>{result.sanction_regime}</td>
+                                    <td>
+                                        {#if sanctionsListLinks[result.sanctions_list]}
+                                            <a href={sanctionsListLinks[result.sanctions_list]} target="_blank" rel="noopener noreferrer">{result.sanctions_list}</a>
+                                        {:else}
+                                            {result.sanctions_list}
+                                        {/if}
+                                    </td>
+                                    <td>{result.year_of_birth}</td>
+                                    <td>{result.country_of_birth}</td>
+                                    <td>{result.similarity}%</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>
+                                            {result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                {:else if searchInitiated} 
+            <!-- Display "No Results" message only if a search has been initiated -->
+                    <div class="alert alert-info" role="alert">
+                        No results.
+                    </div>
+                {/if}
             {/if}
         </div>
     </div>
