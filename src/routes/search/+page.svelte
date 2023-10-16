@@ -3,51 +3,70 @@
     import Navbar from '$lib/Navbar.svelte';
 
     let currentDate = new Date().toLocaleString();
-  
     let name = '';
     let threshold = 85; // Default value
     let results = [];
     let loading = false;
     let errorMessage = '';
+
+    const sanctionsListLinks = {
+        'US': 'https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists',
+        'UK': 'https://docs.fcdo.gov.uk/docs/UK-Sanctions-List.html',
+        // Add more in the future as needed, like:
+        // 'CA': 'https://example.com/canada-list',
+        // 'EU': 'https://example.com/eu-list',
+        // ... and so on.
+    };
+
+    function generateCode() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < 6; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    }
   
     async function searchSanctions() {
-      loading = true;
-      errorMessage = '';  // Clear any previous error message
-  
-      try {
-          const res = await fetch(`https://fastapi-project-njro5od4ga-nw.a.run.app/search_sanctions_lists/?name=${name}&threshold=${threshold}`);
-          
-          if (!res.ok) {
-              throw new Error('Failed to fetch from API');
-          }
-  
-          const data = await res.json();
-          results = data.local_search_results;
-      } catch (error) {
-          console.error("Error fetching data:", error);
-          errorMessage = error.message;
-      } finally {
-          loading = false;
-      }
+        loading = true;
+        errorMessage = '';  // Clear any previous error message
+
+        try {
+            const res = await fetch(`https://fastapi-project-njro5od4ga-nw.a.run.app/search_sanctions_lists/?name=${name}&threshold=${threshold}`);
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch from API');
+            }
+
+            const data = await res.json();
+            results = data.local_search_results.map(item => ({
+                ...item,
+                code: generateCode(),
+                isConcerning: false
+            }));
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            errorMessage = error.message;
+        } finally {
+            loading = false;
+        }
     }
 
-    // This will be invoked when the "mark irrelevant" button is clicked
-    function markIrrelevant(index) {
-        results[index].isIrrelevant = true;
+    function toggleConcern(index) {
+        results[index].isConcerning = !results[index].isConcerning;
     }
 
-    function reorderCards() {
-        results = [...results].sort((a, b) => (a.isIrrelevant ? 1 : 0) - (b.isIrrelevant ? 1 : 0));
-    }
+    function reorderRows() {
+        results = results.sort((a, b) => (b.isConcerning ? 1 : 0) - (a.isConcerning ? 1 : 0));
+    } 
 
-  
+
     onMount(() => {
-      // If you want to do something on component mount.
+        // If you want to do something on component mount.
     });
 </script>
-
 <Navbar />
-  
+
 <div class="container mt-5">
     <div class="row">
         <!-- Sidebar for inputs -->
@@ -56,14 +75,14 @@
                 <label for="nameInput" class="form-label">Search Name:</label>
                 <input type="text" bind:value={name} class="form-control" id="nameInput" placeholder="Enter name...">
             </div>
-        
+
             <div class="mb-3">
                 <label for="thresholdSlider" class="form-label">Similarity Threshold ({threshold}%)</label>
                 <input type="range" bind:value={threshold} min="0" max="100" class="form-control-range" id="thresholdSlider">
             </div>
-        
+
             <button on:click={searchSanctions} class="btn btn-primary mb-3">Search</button>
-        
+
             <!-- Loading Spinner -->
             {#if loading}
                 <div class="mt-3 d-flex justify-content-center">
@@ -76,45 +95,64 @@
 
         <!-- Main content area -->
         <div class="col-md-8">
-                <!-- Date and Time Marker -->
+            <!-- Date and Time Marker -->
             <div class="mb-3">
                 <strong>Date & Time:</strong> {currentDate}
             </div>
+
             <!-- Error Message -->
             {#if errorMessage}
                 <div class="alert alert-danger" role="alert">
                     {errorMessage}
                 </div>
             {/if}
-        
-            {#if !loading && results.length}
-            <div class="mb-2 d-flex justify-content-between">
-                <button class="btn btn-outline-info" on:click={reorderCards}>Reorder Cards</button>
-                <button class="btn btn-outline-success" on:click={downloadPDF}>Download results to PDF</button>
-            </div>
 
-            <!-- Display Results -->
-                <div class="d-flex flex-wrap">
-                    {#each results as result, index}
-                        <div class="card m-2 {result.isIrrelevant ? 'bg-light' : ''}" style="width: 18rem;">
-                            <div class="card-body">
-                                <h5 class="card-title">{result.full_name}</h5>
-                                <p class="card-text">
-                                    Sanction Regime: {result.sanction_regime} <br>
-                                    Sanctions List: {result.sanctions_list} <br>
-                                    Year of Birth: {result.year_of_birth} <br>
-                                    Country of Birth: {result.country_of_birth} <br>
-                                    Similarity: {result.similarity}%
-                                </p>
-                                {#if !result.isIrrelevant}
-                                    <button class="btn btn-secondary btn-sm" on:click={() => markIrrelevant(index)}>Mark irrelevant</button>
-                                {/if}
-                            </div>
-                        </div>
-                    {/each}
+            {#if !loading && results.length}
+                <div class="mb-2 d-flex justify-content-between">
+                    <button class="btn btn-outline-info" on:click={reorderRows}>Reorder Rows</button>
+                  <!--  <button class="btn btn-outline-success" on:click={downloadPDF}>Download results to PDF</button> -->
                 </div>
+
+                <!-- Display Results in a Table format -->
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Sanction Regime</th>
+                            <th>Sanctions List</th>
+                            <th>Date of Birth</th>
+                            <th>Country</th>
+                            <th>Similarity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each results as result, index}
+                            <tr class="{result.isConcerning ? 'table-danger' : ''}">
+                                <td>{result.code}</td>
+                                <td>{result.full_name}</td>
+                                <td>{result.sanction_regime}</td>
+                                <td>
+                                    {#if sanctionsListLinks[result.sanctions_list]}
+                                        <a href={sanctionsListLinks[result.sanctions_list]} target="_blank" rel="noopener noreferrer">{result.sanctions_list}</a>
+                                    {:else}
+                                        {result.sanctions_list}
+                                    {/if}
+                                </td>
+                                <td>{result.year_of_birth}</td>
+                                <td>{result.country_of_birth}</td>
+                                <td>{result.similarity}%</td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>
+                                        {result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
+                                    </button>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
             {/if}
         </div>
     </div>
 </div>
-

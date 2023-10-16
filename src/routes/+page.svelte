@@ -13,17 +13,6 @@
   <p class="lead">Your premier financial screening tool.</p>
 </div>
 
-<div class="features my-5">
-  <h2 class="display-5">Key Features</h2>
-  <ul class="list-unstyled mt-4">
-    <li class="h4 mb-3">User-Friendly Interface</li>
-    <li class="h4 mb-3">Comprehensive Sanction Checks</li>
-    <li class="h4 mb-3">News Insights</li>
-    <li class="h4 mb-3">Efficient Reporting</li>
-    <li class="h4 mb-3">Secure Storage</li>
-  </ul>
-</div>
-
 <div class="cta my-5">
   <button class="btn btn-lg btn-success" on:click={() => goto('/search')}>Get Started</button>
 </div>

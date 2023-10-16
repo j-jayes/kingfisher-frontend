@@ -4,7 +4,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 	<a class="navbar-brand" href="javascript:void(0)" on:click={() => goto('/')}>
-		<img src="/logo.svg" alt="Logo" id="logo" />
+		<img src="/favicon/favicon.ico" alt="Logo" id="logo" />
 	</a>
 	<div class="collapse navbar-collapse" id="navbarNav">
 		<ul class="navbar-nav">
