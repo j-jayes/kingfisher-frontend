@@ -14,7 +14,8 @@
 </div>
 
 <div class="cta my-5">
-  <button class="btn btn-lg btn-success" on:click={() => goto('/search')}>Get Started</button>
+  <button class="btn btn-lg btn-success" on:click={() => goto('/search_web')}>Get Started with Web Search</button>
+  <button class="btn btn-lg btn-dark" on:click={() => goto('/search_sanctions_lists')}>Get Started with Sanctions List Search</button>
 </div>
 </div>
 
