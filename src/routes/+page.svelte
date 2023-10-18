@@ -6,21 +6,19 @@
     </div>
 </div>
 
-<script>
-    let searchQuery = "Search input here";
-    let results = []; // An array to store the results
-    let jaroWinklerDistance = 75; // Default value
-    let modifiers = {
-        fraud: false,
-        moneyLaundering: false,
-        crime: false,
-    };
+<!-- Scripts -->
+<script context="module">
+    export const prerender = true;
 
-    // Fetch the results (a dummy function for now)
-    function fetchResults() {
-        // Fetch logic here
-        results = ["Example Result 1", "Example Result 2"];
-    }
+    let searchQuery = "";
+    let results = []; 
+    let jaroWinklerDistance = 75; 
+    let wildcard = "";
+    let modifiers = {
+        financialCrimes: false,
+        regulatoryBodies: false,
+        lawsAndActs: false,
+    };
 
     function handleFocus() {
         if (searchQuery === "Search input here") {
@@ -28,13 +26,18 @@
         }
     }
 
+    // Fetch the results (a dummy function for now)
+    function fetchResults() {
+        // Fetch logic here
+        results = ["Example Result 1", "Example Result 2"];
+    }
+
+
     function handleRelevance(result) {
-        // Handle confirmed relevance here
         console.log(`${result.title} is relevant.`);
     }
 
     function handleIrrelevance(result) {
-        // Handle marking as irrelevant here
         console.log(`${result.title} is irrelevant.`);
     }
 
@@ -100,17 +103,17 @@
     }
 </script>
 
-
+<!-- Styles -->
 <style>
-    /* Custom styles if needed */
     .results-window {
-        height: 700px;
+        height: 800px;
         overflow-y: auto;
     }
 </style>
 
+<!-- Main content -->
 <div class="container mt-4">
-    <!-- Updated Search Bar -->
+    <!-- Search Bar -->
     <input 
         type="text" 
         bind:value={searchQuery} 
@@ -120,7 +123,8 @@
         class="form-control mb-4"
         style="color: {searchQuery === 'name here' ? 'grey' : 'black'}"
     >
-    <!-- Main Content Area -->
+
+    <!-- Results and Parameters Area -->
     <div class="row">
         <!-- Results Window -->
         <div class="col-md-8 mb-4">
@@ -134,7 +138,9 @@
                                 </div>
                                 <div class="col-md-10">
                                     <div class="card-body">
-                                        <h5 class="card-title"><a href={result.link} target="_blank">{result.title}</a></h5>
+                                        <h5 class="card-title">
+                                            <a href={result.link} target="_blank">{result.title}</a>
+                                        </h5>
                                         <p class="card-text">{result.snippet}</p>
                                         <button class="btn btn-success mr-2" on:click={() => handleRelevance(result)}>Confirm Relevance</button>
                                         <button class="btn btn-warning" on:click={() => handleIrrelevance(result)}>Mark Irrelevant</button>
@@ -149,35 +155,95 @@
             </div>
         </div>
 
-        <!-- Sidebar for parameters -->
+        <!-- Parameters Sidebar -->
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Parameters</h3>
-
                     <!-- Jaro Winkler Distance Slider -->
                     <div class="form-group">
                         <label for="jaro">Jaro Winkler Distance: {jaroWinklerDistance}</label>
                         <input id="jaro" type="range" min="0" max="100" bind:value={jaroWinklerDistance} on:input={fetchResults} class="form-control-range">
                     </div>
 
+
                     <!-- Modifiers Checkboxes -->
+                    <h5>Areas of interest</h5>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="fraud" bind:checked={modifiers.fraud} on:change={fetchResults}>
-                        <label class="form-check-label" for="fraud">Fraud</label>
+                        <input class="form-check-input" type="checkbox" id="financialCrimes" bind:checked={modifiers.financialCrimes} on:change={fetchResults}>
+                        <label class="form-check-label" for="financialCrimes">Financial Crimes</label>
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="moneyLaundering" bind:checked={modifiers.moneyLaundering} on:change={fetchResults}>
-                        <label class="form-check-label" for="moneyLaundering">Money Laundering</label>
+                        <input class="form-check-input" type="checkbox" id="regulatoryBodies" bind:checked={modifiers.regulatoryBodies} on:change={fetchResults}>
+                        <label class="form-check-label" for="regulatoryBodies">Regulatory Bodies</label>
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="crime" bind:checked={modifiers.crime} on:change={fetchResults}>
-                        <label class="form-check-label" for="crime">Crime</label>
+                        <input class="form-check-input" type="checkbox" id="lawsAndActs" bind:checked={modifiers.lawsAndActs} on:change={fetchResults}>
+                        <label class="form-check-label" for="lawsAndActs">Laws and Acts</label>
+                    </div>
+
+                        <!-- Wildcard Modifier -->
+                    <div class="form-group mt-3">
+                        <label for="wildcardModifier">Wildcard Modifier</label>
+                        <input type="text" class="form-control" id="wildcardModifier" bind:value={wildcard} placeholder="Enter wildcard">
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<h3> What are the different areas of interest? </h3>
+
+<!-- Terms Section at the bottom -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Types of Financial Crimes -->
+        <div class="col-md-4">
+            <h5>Types of Financial Crimes:</h5>
+            <ul>
+                <li>Tax evasion</li>
+                <li>Insider trading</li>
+                <li>Bribery</li>
+                <li>Embezzlement</li>
+                <li>Ponzi schemes</li>
+                <li>False accounting</li>
+                <li>Credit card fraud</li>
+                <li>Identity theft</li>
+                <li>Securities fraud</li>
+                <li>Market manipulation</li>
+            </ul>
+        </div>
+
+        <!-- Regulatory Bodies & Entities -->
+        <div class="col-md-4">
+            <h5>Regulatory Bodies & Entities:</h5>
+            <ul>
+                <li>Her Majesty's Revenue and Customs (HMRC) – for tax-related crimes</li>
+                <li>Serious Fraud Office (SFO)</li>
+                <li>The City of London Police's Economic Crime Directorate</li>
+                <li>The National Crime Agency (NCA) – especially their Economic Crime Command</li>
+            </ul>
+        </div>
+
+        <!-- Laws & Acts -->
+        <div class="col-md-4">
+            <h5>Laws & Acts:</h5>
+            <ul>
+                <li>Fraud Act 2006</li>
+                <li>Proceeds of Crime Act 2002</li>
+                <li>Bribery Act 2010</li>
+                <li>Money Laundering Regulations 2007 & 2017</li>
+                <li>Financial Services and Markets Act 2000</li>
+                <li>Company Directors Disqualification Act 1986</li>
+                <li>Companies Act 2006 – especially for matters like directorial responsibilities and duties</li>
+                <li>Insider Dealing (Criminal Sanctions) Regulations</li>
+                <li>Market Abuse Regulation (MAR) – particularly for EU-related matters up to the end of the transition period</li>
+            </ul>
         </div>
     </div>
 </div>
