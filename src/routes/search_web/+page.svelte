@@ -1,14 +1,16 @@
 <script>
 	import { onMount } from 'svelte';
-    import Navbar from '$lib/Navbar.svelte';
+	import Navbar from '$lib/Navbar.svelte';
+	import jsPDF from 'jspdf';
+	import html2canvas from 'html2canvas';
 
 	let name = '';
 	let modifier = '';
 	let additional_search_terms = '';
 	let results = [];
 	let loading = false;
-    let comments = ''; // to bind to the textarea
-    let currentDate = new Date().toLocaleString();
+	let comments = ''; // to bind to the textarea
+	let currentDate = new Date().toLocaleString();
 
 	let modifiers = [
 		{ label: 'Fraud', value: 'fraud', checked: false },
@@ -33,9 +35,9 @@
 
 		try {
 			// Construct the fetch URL using the updated modifierQuery
-            const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${name}${
-                modifierQuery ? '&modifier=' + modifierQuery : ''
-            }&additional_info=${additional_search_terms}`;
+			const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${name}${
+				modifierQuery ? '&modifier=' + modifierQuery : ''
+			}&additional_info=${additional_search_terms}`;
 
 			const response = await fetch(url);
 
@@ -43,10 +45,10 @@
 				const data = await response.json();
 				results = data.results;
 
-                // Add a random ID code to each result
-                results.forEach(result => {
-                    result.idCode = generateCode();
-                });
+				// Add a random ID code to each result
+				results.forEach((result) => {
+					result.idCode = generateCode();
+				});
 			} else {
 				console.error('Failed to fetch data:', await response.text());
 			}
@@ -57,10 +59,10 @@
 		}
 	}
 
-    function autoExpand(element) {
-        element.style.height = 'auto';
-        element.style.height = (element.scrollHeight) + 'px';
-    }
+	function autoExpand(element) {
+		element.style.height = 'auto';
+		element.style.height = element.scrollHeight + 'px';
+	}
 
 	function getColor(engine) {
 		switch (engine) {
@@ -77,15 +79,14 @@
 		}
 	}
 
-    function generateCode() {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let result = '';
-        for (let i = 0; i < 6; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return result;
-    }
-
+	function generateCode() {
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		let result = '';
+		for (let i = 0; i < 6; i++) {
+			result += characters.charAt(Math.floor(Math.random() * characters.length));
+		}
+		return result;
+	}
 
 	function toggleConcern(index) {
 		results[index].isConcerning = !results[index].isConcerning;
@@ -93,6 +94,49 @@
 
 	function reorderRows() {
 		results = results.sort((a, b) => (b.isConcerning ? 1 : 0) - (a.isConcerning ? 1 : 0));
+	}
+
+	function downloadPDF() {
+		// Selector for the results section
+		const resultsSection = document.querySelector('.results-section');
+
+		html2canvas(resultsSection).then((canvas) => {
+			const imgData = canvas.toDataURL('image/png');
+			const pdf = new jsPDF('p', 'mm', 'a4');
+			const pdfWidth = pdf.internal.pageSize.getWidth();
+			const pdfHeight = pdf.internal.pageSize.getHeight();
+			const canvasWidth = canvas.width;
+			const canvasHeight = canvas.height;
+			const aspectRatio = canvasWidth / canvasHeight;
+			let newHeight = pdfWidth / aspectRatio;
+			let heightLeft = newHeight;
+			let position = 0;
+
+			if (newHeight > pdfHeight) {
+				newHeight = pdfHeight;
+				const newWidth = newHeight * aspectRatio;
+				pdf.addImage(imgData, 'PNG', 0, position, newWidth, newHeight);
+				heightLeft -= pdfHeight;
+			} else {
+				pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, newHeight);
+				heightLeft -= newHeight;
+			}
+
+			while (heightLeft >= 0) {
+				position = heightLeft - newHeight;
+				pdf.addPage();
+				if (newHeight > pdfHeight) {
+					const newWidth = newHeight * aspectRatio;
+					pdf.addImage(imgData, 'PNG', 0, position, newWidth, newHeight);
+					heightLeft -= pdfHeight;
+				} else {
+					pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, newHeight);
+					heightLeft -= newHeight;
+				}
+			}
+
+			pdf.save('cards.pdf');
+		});
 	}
 </script>
 
@@ -112,23 +156,25 @@
 					placeholder="Enter name..."
 				/>
 			</div>
-            <!-- Modifier Checkboxes -->
-            <div class="mb-3">
-                <label class="form-label">Modifiers:</label>
-                {#each modifiers as modifier (modifier.value)} <!-- using modifier.value as key -->
-                    <div class="form-check">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            bind:checked={modifier.checked}
-                            id="{modifier.value}" 
-                        />
-                        <label class="form-check-label" for="{modifier.value}"> <!-- and here -->
-                            {modifier.label}
-                        </label>
-                    </div>
-                {/each}
-            </div>
+			<!-- Modifier Checkboxes -->
+			<div class="mb-3">
+				<label class="form-label">Modifiers:</label>
+				{#each modifiers as modifier (modifier.value)}
+					<!-- using modifier.value as key -->
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="checkbox"
+							bind:checked={modifier.checked}
+							id={modifier.value}
+						/>
+						<label class="form-check-label" for={modifier.value}>
+							<!-- and here -->
+							{modifier.label}
+						</label>
+					</div>
+				{/each}
+			</div>
 
 			<div class="mb-3">
 				<label for="additionalSearchTermsInput" class="form-label">Additional Search Terms:</label>
@@ -144,6 +190,7 @@
 			<div>
 				<button class="btn btn-primary" on:click={fetchData}>Search</button>
 				<button on:click={reorderRows} class="btn btn-secondary">Reorder Cards</button>
+				<button class="btn btn-primary" on:click={downloadPDF}>Download PDF</button>
 			</div>
 
 			{#if loading}
@@ -156,21 +203,29 @@
 		</div>
 
 		<!-- Results -->
-		<div class="col-md-8">
-            <!-- Date and Time Marker -->
-            <div class="mb-3">
-                <strong>Date & Time:</strong> {currentDate}
-            </div>
-        
-            <!-- Comments Textbox -->
-            <div class="mb-3">
-                <label for="analystComments" class="form-label">Analyst Comments:</label>
-                <textarea id="analystComments" bind:value={comments} on:input={(e) => autoExpand(e.target)} class="form-control" rows="2" placeholder="Enter your comments here..."></textarea>
-            </div>
+		<div class="col-md-8 results-section">
+			<!-- Date and Time Marker -->
+			<div class="mb-3">
+				<strong>Date & Time:</strong>
+				{currentDate}
+			</div>
+
+			<!-- Comments Textbox -->
+			<div class="mb-3">
+				<label for="analystComments" class="form-label">Analyst Comments:</label>
+				<textarea
+					id="analystComments"
+					bind:value={comments}
+					on:input={(e) => autoExpand(e.target)}
+					class="form-control"
+					rows="2"
+					placeholder="Enter your comments here..."
+				/>
+			</div>
 			{#each results as result, index (result.link)}
 				<div class={`card mb-3 ${result.isConcerning ? 'bg-danger text-white' : ''}`}>
 					<div class="card-body position-relative">
-                        <span class="text-secondary">{result.idCode}</span>
+						<span class="text-secondary">{result.idCode}</span>
 						<h5 class="card-title">{result.title}</h5>
 						<a href={result.link} target="_blank" rel="noopener noreferrer">{result.link}</a>
 						<p class="card-text mt-2">{result.snippet}</p>
