@@ -1,16 +1,20 @@
 <script>
 	import { onMount } from 'svelte';
 	import Navbar from '$lib/Navbar.svelte';
-	import jsPDF from 'jspdf';
-	import html2canvas from 'html2canvas';
+	import SearchInput from '$lib/SearchInput.svelte';
+	import Comments from '$lib/Comments.svelte';
+	import ResultsList from '$lib/ResultsList.svelte';
+	import PDFDownloadButton from '$lib/PDFDownloadButton.svelte';
 
 	let name = '';
-	let modifier = '';
 	let additional_search_terms = '';
 	let results = [];
 	let loading = false;
-	let comments = ''; // to bind to the textarea
+	let comments = '';
 	let currentDate = new Date().toLocaleString();
+	let pdfContainer;
+	let loadingPDF = false;
+	let queryString = '';
 
 	let modifiers = [
 		{ label: 'Fraud', value: 'fraud', checked: false },
@@ -26,12 +30,18 @@
 		// ... (continue in this manner for all the modifiers)
 	];
 
+	$: {
+        // Create a string representing the search query
+        let modifierQuery = modifiers.filter(m => m.checked).map(m => m.value).join(',');
+        queryString = `name=${name}${modifierQuery ? '&modifier=' + modifierQuery : ''}&additional_info=${additional_search_terms}`;
+    }
+
 	async function fetchData() {
 		loading = true;
 
 		// Collect selected modifiers
 		let selectedModifiers = modifiers.filter((m) => m.checked).map((m) => m.value);
-		let modifierQuery = selectedModifiers.join(',');
+		let modifierQuery = selectedModifiers.join(' OR ');
 
 		try {
 			// Construct the fetch URL using the updated modifierQuery
@@ -96,47 +106,9 @@
 		results = results.sort((a, b) => (b.isConcerning ? 1 : 0) - (a.isConcerning ? 1 : 0));
 	}
 
-	function downloadPDF() {
-		// Selector for the results section
-		const resultsSection = document.querySelector('.results-section');
-
-		html2canvas(resultsSection).then((canvas) => {
-			const imgData = canvas.toDataURL('image/png');
-			const pdf = new jsPDF('p', 'mm', 'a4');
-			const pdfWidth = pdf.internal.pageSize.getWidth();
-			const pdfHeight = pdf.internal.pageSize.getHeight();
-			const canvasWidth = canvas.width;
-			const canvasHeight = canvas.height;
-			const aspectRatio = canvasWidth / canvasHeight;
-			let newHeight = pdfWidth / aspectRatio;
-			let heightLeft = newHeight;
-			let position = 0;
-
-			if (newHeight > pdfHeight) {
-				newHeight = pdfHeight;
-				const newWidth = newHeight * aspectRatio;
-				pdf.addImage(imgData, 'PNG', 0, position, newWidth, newHeight);
-				heightLeft -= pdfHeight;
-			} else {
-				pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, newHeight);
-				heightLeft -= newHeight;
-			}
-
-			while (heightLeft >= 0) {
-				position = heightLeft - newHeight;
-				pdf.addPage();
-				if (newHeight > pdfHeight) {
-					const newWidth = newHeight * aspectRatio;
-					pdf.addImage(imgData, 'PNG', 0, position, newWidth, newHeight);
-					heightLeft -= pdfHeight;
-				} else {
-					pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, newHeight);
-					heightLeft -= newHeight;
-				}
-			}
-
-			pdf.save('cards.pdf');
-		});
+	function handleInputChange(event) {
+		name = event.detail.name;
+		additional_search_terms = event.detail.additional_search_terms;
 	}
 </script>
 
@@ -144,109 +116,21 @@
 
 <div class="container mt-5">
 	<div class="row">
-		<!-- Sidebar for inputs -->
 		<div class="col-md-4">
-			<div class="mb-3">
-				<label for="nameInput" class="form-label">Search Name:</label>
-				<input
-					type="text"
-					bind:value={name}
-					class="form-control"
-					id="nameInput"
-					placeholder="Enter name..."
-				/>
-			</div>
-			<!-- Modifier Checkboxes -->
-			<div class="mb-3">
-				<label class="form-label">Modifiers:</label>
-				{#each modifiers as modifier (modifier.value)}
-					<!-- using modifier.value as key -->
-					<div class="form-check">
-						<input
-							class="form-check-input"
-							type="checkbox"
-							bind:checked={modifier.checked}
-							id={modifier.value}
-						/>
-						<label class="form-check-label" for={modifier.value}>
-							<!-- and here -->
-							{modifier.label}
-						</label>
-					</div>
-				{/each}
-			</div>
-
-			<div class="mb-3">
-				<label for="additionalSearchTermsInput" class="form-label">Additional Search Terms:</label>
-				<input
-					type="text"
-					bind:value={additional_search_terms}
-					class="form-control"
-					id="additionalSearchTermsInput"
-					placeholder="Enter additional search terms..."
-				/>
-			</div>
-
-			<div>
-				<button class="btn btn-primary" on:click={fetchData}>Search</button>
-				<button on:click={reorderRows} class="btn btn-secondary">Reorder Cards</button>
-				<button class="btn btn-primary" on:click={downloadPDF}>Download PDF</button>
-			</div>
-
-			{#if loading}
-				<div class="mt-3 d-flex justify-content-center">
-					<div class="spinner-border" role="status">
-						<span class="sr-only">Loading...</span>
-					</div>
-				</div>
-			{/if}
+			<SearchInput
+				{name}
+				{modifiers}
+				{additional_search_terms}
+				{fetchData}
+				{reorderRows}
+				{loading}
+				on:inputChange={handleInputChange}
+			/>
+			<PDFDownloadButton {pdfContainer} {queryString} />
 		</div>
-
-		<!-- Results -->
-		<div class="col-md-8 results-section">
-			<!-- Date and Time Marker -->
-			<div class="mb-3">
-				<strong>Date & Time:</strong>
-				{currentDate}
-			</div>
-
-			<!-- Comments Textbox -->
-			<div class="mb-3">
-				<label for="analystComments" class="form-label">Analyst Comments:</label>
-				<textarea
-					id="analystComments"
-					bind:value={comments}
-					on:input={(e) => autoExpand(e.target)}
-					class="form-control"
-					rows="2"
-					placeholder="Enter your comments here..."
-				/>
-			</div>
-			{#each results as result, index (result.link)}
-				<div class={`card mb-3 ${result.isConcerning ? 'bg-danger text-white' : ''}`}>
-					<div class="card-body position-relative">
-						<span class="text-secondary">{result.idCode}</span>
-						<h5 class="card-title">{result.title}</h5>
-						<a href={result.link} target="_blank" rel="noopener noreferrer">{result.link}</a>
-						<p class="card-text mt-2">{result.snippet}</p>
-
-						<!-- Mark Concerning Button in Bottom Right -->
-						<button
-							on:click={() => toggleConcern(index)}
-							class={`btn btn-sm btn-secondary position-absolute bottom-0 end-0 mb-2 me-2 ${
-								result.isConcerning ? 'btn-light' : ''
-							}`}
-						>
-							{result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
-						</button>
-					</div>
-					<div class="card-footer bg-light">
-						{#each result.search_engines as engine}
-							<span class={`badge ${getColor(engine)} me-1 mb-1`}>{engine}</span>
-						{/each}
-					</div>
-				</div>
-			{/each}
+		<div bind:this={pdfContainer} class="col-md-8">
+			<Comments {comments} {autoExpand} />
+			<ResultsList {results} {toggleConcern} {getColor} />
 		</div>
 	</div>
 </div>

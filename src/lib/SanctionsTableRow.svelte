@@ -1,0 +1,27 @@
+<script>
+    export let result;
+    export let sanctionsListLinks;
+    export let index;
+    export let toggleConcern;
+</script>
+
+<tr class="{result.isConcerning ? 'table-danger' : ''}">
+    <td>{result.code}</td>
+    <td>{result.full_name}</td>
+    <td>{result.sanction_regime}</td>
+    <td>
+        {#if sanctionsListLinks[result.sanctions_list]}
+            <a href={sanctionsListLinks[result.sanctions_list]} target="_blank" rel="noopener noreferrer">{result.sanctions_list}</a>
+        {:else}
+            {result.sanctions_list}
+        {/if}
+    </td>
+    <td>{result.year_of_birth}</td>
+    <td>{result.country_of_birth}</td>
+    <td>{result.similarity}%</td>
+    <td>
+        <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>
+            {result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
+        </button>
+    </td>
+</tr>
