@@ -4,6 +4,7 @@
 	import SanctionsTable from '$lib/SanctionsTable.svelte';
 	import LoadingSpinner from '$lib/LoadingSpinner.svelte';
 	import ErrorAlert from '$lib/ErrorAlert.svelte';
+	import PDFDownloadButton from '$lib/PDFDownloadButtonTable.svelte';
 
 	let currentDate = new Date().toLocaleString();
 	let name = '';
@@ -13,6 +14,14 @@
 	let errorMessage = '';
 	let searchInitiated = false; // New state variable to track if a search has been initiated
 	let comments = ''; // to bind to the textarea
+	let pdfContainer;
+	let loadingPDF = false;
+	let queryString = '';
+
+	$: {
+		// Create a string representing the search query
+		queryString = `name=${name}&threshold=${threshold}`;
+	}
 
 	const sanctionsListLinks = {
 		US: 'https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists',
@@ -74,25 +83,28 @@
 		results = results.sort((a, b) => (b.isConcerning ? 1 : 0) - (a.isConcerning ? 1 : 0));
 	}
 
-    function handleInputChange(event) {
-        ({ name, threshold } = event.detail);
-    }
+	function handleInputChange(event) {
+		({ name, threshold } = event.detail);
+	}
 
-    function handleSearch() {
-        searchSanctions();  // assuming searchSanctions is the function to initiate the search
-    }
+	function handleSearch() {
+		searchSanctions(); // assuming searchSanctions is the function to initiate the search
+	}
 </script>
 
 <Navbar />
 <div class="container mt-5">
 	<div class="row">
 		<div class="col-md-4 bg-light sidebar p-3">
-            <SanctionsSearch on:input={handleInputChange} on:search={handleSearch} />
+			<SanctionsSearch on:input={handleInputChange} on:search={handleSearch} />
 			{#if loading}
 				<LoadingSpinner />
 			{/if}
+			<div>
+				<PDFDownloadButton {pdfContainer} {queryString} />
+			</div>
 		</div>
-		<div class="col-md-8">
+		<div bind:this={pdfContainer} class="col-md-8">
 			<!-- Comments Textbox -->
 			<div class="mb-3">
 				<label for="analystComments" class="form-label">Analyst Comments:</label>

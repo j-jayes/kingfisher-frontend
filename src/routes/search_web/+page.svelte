@@ -31,10 +31,15 @@
 	];
 
 	$: {
-        // Create a string representing the search query
-        let modifierQuery = modifiers.filter(m => m.checked).map(m => m.value).join(',');
-        queryString = `name=${name}${modifierQuery ? '&modifier=' + modifierQuery : ''}&additional_info=${additional_search_terms}`;
-    }
+		// Create a string representing the search query
+		let modifierQuery = modifiers
+			.filter((m) => m.checked)
+			.map((m) => m.value)
+			.join(',');
+		queryString = `name=${name}${
+			modifierQuery ? '&modifier=' + modifierQuery : ''
+		}&additional_info=${additional_search_terms}`;
+	}
 
 	async function fetchData() {
 		loading = true;
@@ -45,7 +50,8 @@
 
 		try {
 			// Construct the fetch URL using the updated modifierQuery
-			const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${name}${
+			const encodedName = encodeURIComponent(`"${name}"`); // Enclose name in quotes and encode
+			const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${encodedName}${
 				modifierQuery ? '&modifier=' + modifierQuery : ''
 			}&additional_info=${additional_search_terms}`;
 
