@@ -9,15 +9,15 @@
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-md-8 text-center">
-				<h1 class="display-3 text-white mb-4">Welcome to Alcedo!</h1>
+				<h1 class="display-3 text-white mb-4">Welcome to Alcedo</h1>
 				<p class="lead text-white">Your premier financial screening tool.</p>
 
 				<div class="cta mt-5">
 					<button class="btn btn-lg btn-light mr-3" on:click={() => goto('/search_web')}
-						>Get Started with Web Search</button
+						>Web Search</button
 					>
 					<button class="btn btn-lg btn-dark" on:click={() => goto('/search_sanctions_lists')}
-						>Get Started with Sanctions List Search</button
+						>Sanctions List Search</button
 					>
 				</div>
 			</div>
