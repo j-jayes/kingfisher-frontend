@@ -10,15 +10,17 @@
     <button class="btn btn-outline-info" on:click={reorderRows}>Reorder Rows</button>
 </div>
 
+
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Sanction Regime</th>
+            <th>Entity Type</th>
             <th>Sanctions List</th>
             <th>Date of Birth</th>
             <th>Country</th>
+            <th>Identifying Information</th>
             <th>Similarity</th>
             <th>Action</th>
         </tr>

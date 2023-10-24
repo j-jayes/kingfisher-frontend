@@ -7,8 +7,8 @@
 
 <tr class="{result.isConcerning ? 'table-danger' : ''}">
     <td>{result.code}</td>
-    <td>{result.full_name}</td>
-    <td>{result.sanction_regime}</td>
+    <td>{result.entity_name}</td>
+    <td>{result.entity_type}</td>
     <td>
         {#if sanctionsListLinks[result.sanctions_list]}
             <a href={sanctionsListLinks[result.sanctions_list]} target="_blank" rel="noopener noreferrer">{result.sanctions_list}</a>
@@ -18,6 +18,7 @@
     </td>
     <td>{result.year_of_birth}</td>
     <td>{result.country_of_birth}</td>
+    <td>{result.identifying_information}</td>
     <td>{result.similarity}%</td>
     <td>
         <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>

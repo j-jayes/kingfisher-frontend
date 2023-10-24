@@ -25,7 +25,9 @@
 
 	const sanctionsListLinks = {
 		US: 'https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists',
-		UK: 'https://docs.fcdo.gov.uk/docs/UK-Sanctions-List.html'
+		UK: 'https://docs.fcdo.gov.uk/docs/UK-Sanctions-List.html',
+		EU: "https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions?locale=en",
+		"Yale List of Companies in Russia": "https://www.yalerussianbusinessretreat.com"
 		// Add more in the future as needed, like:
 		// 'CA': 'https://example.com/canada-list',
 		// 'EU': 'https://example.com/eu-list',
