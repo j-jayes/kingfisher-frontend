@@ -20,7 +20,6 @@
             <th>Sanctions List</th>
             <th>Date of Birth</th>
             <th>Country</th>
-            <th>Identifying Information</th>
             <th>Similarity</th>
             <th>Action</th>
         </tr>

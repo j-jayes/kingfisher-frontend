@@ -18,7 +18,6 @@
     </td>
     <td>{result.year_of_birth}</td>
     <td>{result.country_of_birth}</td>
-    <td>{result.identifying_information}</td>
     <td>{result.similarity}%</td>
     <td>
         <button class="btn btn-secondary btn-sm" on:click={() => toggleConcern(index)}>
