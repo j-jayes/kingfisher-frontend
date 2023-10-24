@@ -28,7 +28,7 @@
 		type="range"
 		bind:value={threshold}
 		on:input={handleInput}
-		min="0"
+		min="50"
 		max="100"
 		class="form-control-range"
 		id="thresholdSlider"

@@ -10,7 +10,7 @@
 		<div class="row justify-content-center">
 			<div class="col-md-8 text-center">
 				<h1 class="display-3 text-white mb-4">Welcome to Alcedo</h1>
-				<p class="lead text-white">A KYC tool.</p>
+				<p class="lead text-white">Don't get stuck in the reeds.</p>
 
 				<div class="cta mt-5">
 					<button class="btn btn-lg btn-light mr-3" on:click={() => goto('/search_web')}
