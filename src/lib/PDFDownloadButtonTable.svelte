@@ -8,25 +8,65 @@
 	export let queryString; // Accept the queryString prop
 
 	async function downloadPDF() {
-		loadingPDF = true; // set to true at the beginning of the function
-		if (!pdfContainer) {
-			console.error('pdfContainer is not defined');
-			return;
+		const headerContent = formatDateAndQueryString(queryString);
+		queryString = sanitizeFilename(queryString);
+		loadingPDF = true;
+
+		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
+		const css = extractCSS();
+
+		const response = await fetch('/generate-pdf', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ html: pdfContent, css })
+		});
+
+		// Handle the PDF download
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+
+		// Set the filename using the query string
+		const filename = `Alcedo-${queryString}.pdf`; // Ensure queryString is safe to use
+
+		// Create a temporary anchor element for the download
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+
+		// Append the anchor to the body, trigger click, and then remove it
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+
+		// Optional: Revoke the blob URL to free up resources
+		window.URL.revokeObjectURL(url);
+
+		loadingPDF = false;
+	}
+
+	function extractCSS() {
+		let styles = '';
+		for (let sheet of document.styleSheets) {
+			try {
+				for (let rule of sheet.cssRules) {
+					styles += rule.cssText;
+				}
+			} catch (e) {
+				console.warn('Could not access stylesheet: ', sheet.href);
+			}
 		}
+		return styles;
+	}
 
-		const pdf = new jsPDF('p', 'mm', 'a4');
-		const pdfWidth = pdf.internal.pageSize.getWidth();
-		const pdfHeight = pdf.internal.pageSize.getHeight();
-		const marginLeft = 10;
-		const marginRight = 10;
-		const marginTop = 10;
-		const marginBottom = 10;
-		const contentWidth = pdfWidth - marginLeft - marginRight;
-		const contentHeight = pdfHeight - marginTop - marginBottom;
-		let remainingSpaceOnPage = contentHeight;
-		let currentPosition = marginTop;
+	function sanitizeFilename(filename) {
+		return filename
+			.replace(/[/\\?%*:|"<>]/g, '-') // Replacing invalid characters with '-'
+			.replace(/(\.\.\/)|(\/\.\.)/g, '') // Removing directory traversal attempts
+			.substring(0, 255); // Limiting length to 255 characters
+	}
 
-		// Get the current date and time
+	function formatDateAndQueryString(queryString) {
+		// Format the current date and time
 		const now = new Date();
 		const dateStr = now.toLocaleDateString('en-GB', {
 			year: 'numeric',
@@ -38,91 +78,11 @@
 			minute: '2-digit'
 		});
 
-		// Draw the date and time at the top of the PDF
-		pdf.text(`Date: ${dateStr}, Time: ${timeStr}`, marginLeft, currentPosition);
-
-		// Update the remaining space on the page and the current position
-		remainingSpaceOnPage -= 10; // Assume a line height of 10mm for the text
-		currentPosition += 10;
-
+		// Format the query string
 		let queryParamsText = `Search Query:\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
 
-		// Set a different font size and style for the query parameters
-		pdf.setFontSize(12);
-		pdf.setFont('helvetica', 'italic');
-
-		// Draw the query parameters below the date and time
-		pdf.text(queryParamsText, marginLeft, currentPosition);
-
-		// Reset the font size and style to default for the rest of the content
-		pdf.setFontSize(12);
-		pdf.setFont('helvetica', 'normal');
-
-		// Update the remaining space on the page and the current position
-		// Assume a line height of 10mm for the text and add extra space for the line breaks in queryParamsText
-		const lineBreaks = (queryParamsText.match(/\n/g) || []).length;
-		remainingSpaceOnPage -= 10 + lineBreaks * 5;
-		currentPosition += 10 + lineBreaks * 5;
-
-		try {
-			let currentPageNumber = 1; // Track the current page number
-
-			for (let card of pdfContainer.children) {
-				if (currentPageNumber > 3) {
-					// Stop adding more content after the third page
-					break;
-				}
-
-				const canvas = await html2canvas(card);
-				const aspectRatio = canvas.width / canvas.height;
-				const cardHeightInPDF = contentWidth / aspectRatio;
-
-				if (cardHeightInPDF <= remainingSpaceOnPage) {
-					pdf.addImage(
-						canvas.toDataURL('image/png', 0.7),
-						'PNG',
-						marginLeft,
-						currentPosition,
-						contentWidth,
-						cardHeightInPDF
-					);
-					remainingSpaceOnPage -= cardHeightInPDF;
-					currentPosition += cardHeightInPDF;
-				} else {
-					if (currentPageNumber < 3) {
-						// Only add a new page if we are not already on the third page
-						pdf.addPage();
-						currentPageNumber++; // Increment the page number
-						remainingSpaceOnPage = contentHeight;
-						currentPosition = marginTop;
-
-						pdf.addImage(
-							canvas.toDataURL('image/png', 0.7),
-							'PNG',
-							marginLeft,
-							currentPosition,
-							contentWidth,
-							cardHeightInPDF
-						);
-
-						remainingSpaceOnPage -= cardHeightInPDF;
-						currentPosition += cardHeightInPDF;
-					} else {
-						// We are on the third page and do not have enough space for this card,
-						// so we stop adding more content.
-						break;
-					}
-				}
-			}
-
-			const filename = `Alcedo-${queryString}.pdf`;
-
-			pdf.save(filename);
-		} catch (error) {
-			console.error('Error generating PDF:', error);
-		} finally {
-			loadingPDF = false; // set to false at the end of the function
-		}
+		// Return formatted date, time, and query string
+		return `Date: ${dateStr}, Time: ${timeStr}<br>${queryParamsText}`;
 	}
 </script>
 

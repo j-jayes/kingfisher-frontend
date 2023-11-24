@@ -26,3 +26,9 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+    .card {
+        page-break-inside: avoid;
+    }
+</style>
