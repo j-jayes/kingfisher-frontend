@@ -22,4 +22,5 @@ export async function POST({ request }) {
         console.error('Error generating PDF:', error);
         return new Response('Error generating PDF', { status: 500 });
     }
+    
 }
