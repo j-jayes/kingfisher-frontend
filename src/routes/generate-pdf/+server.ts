@@ -6,10 +6,8 @@ export async function POST({ request }) {
         const browser = await launch({ headless: true });
         const page = await browser.newPage();
 
-        await page.setViewport({ width: 1280, height: 1024 });
-
         // Set HTML content
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.setContent(html, { waitUntil: 'networkidle2' });
 
         // Add CSS
         await page.addStyleTag({ content: css });
