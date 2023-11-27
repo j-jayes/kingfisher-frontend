@@ -8,15 +8,23 @@
 		queryString = sanitizeFilename(queryString);
 		loadingPDF = true;
 
+		const externalStylesheets = [
+			'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css',
+			'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'
+		];
+
 		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
 		const css = extractCSS();
 
 		try {
-			const response = await fetch('https://us-central1-kingfisher-backend.cloudfunctions.net/generatePDF', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ html: pdfContent, css })
-			});
+			const response = await fetch(
+				'https://us-central1-kingfisher-backend.cloudfunctions.net/generatePDF',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ html: pdfContent, css, externalStylesheets })
+				}
+			);
 
 			if (response.ok) {
 				const blob = await response.blob();
@@ -52,7 +60,7 @@
 			}
 		}
 		// Extract inline styles
-		document.querySelectorAll('style').forEach(style => {
+		document.querySelectorAll('style').forEach((style) => {
 			styles += style.innerHTML;
 		});
 		return styles;
@@ -68,10 +76,13 @@
 	function formatDateAndQueryString(queryString) {
 		const now = new Date();
 		const dateStr = now.toLocaleDateString('en-GB', {
-			year: 'numeric', month: '2-digit', day: '2-digit'
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit'
 		});
 		const timeStr = now.toLocaleTimeString('en-US', {
-			hour: '2-digit', minute: '2-digit'
+			hour: '2-digit',
+			minute: '2-digit'
 		});
 		let queryParamsText = `Search Query:\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
 		return `Date: ${dateStr}, Time: ${timeStr}<br>${queryParamsText}`;
@@ -86,7 +97,6 @@
 	</div>
 	<div class="loading-text">Preparing PDF...</div>
 </div>
-
 
 <style>
 	.loading-overlay {

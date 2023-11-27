@@ -15,33 +15,36 @@
 		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
 		const css = extractCSS();
 
-		const response = await fetch('/generate-pdf', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ html: pdfContent, css })
-		});
+		try {
+			const response = await fetch(
+				'https://us-central1-kingfisher-backend.cloudfunctions.net/generatePDF',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ html: pdfContent, css })
+				}
+			);
 
-		// Handle the PDF download
-		const blob = await response.blob();
-		const url = window.URL.createObjectURL(blob);
+			if (response.ok) {
+				const blob = await response.blob();
+				const url = window.URL.createObjectURL(blob);
+				const filename = `Alcedo-${queryString}.pdf`; // Ensure queryString is safe to use
 
-		// Set the filename using the query string
-		const filename = `Alcedo-${queryString}.pdf`; // Ensure queryString is safe to use
-
-		// Create a temporary anchor element for the download
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = filename;
-
-		// Append the anchor to the body, trigger click, and then remove it
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-
-		// Optional: Revoke the blob URL to free up resources
-		window.URL.revokeObjectURL(url);
-
-		loadingPDF = false;
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);
+			} else {
+				console.error('Error:', await response.text());
+			}
+		} catch (error) {
+			console.error('Error downloading PDF:', error);
+		} finally {
+			loadingPDF = false;
+		}
 	}
 
 	function extractCSS() {
@@ -55,18 +58,21 @@
 				console.warn('Could not access stylesheet: ', sheet.href);
 			}
 		}
+		// Extract inline styles
+		document.querySelectorAll('style').forEach((style) => {
+			styles += style.innerHTML;
+		});
 		return styles;
 	}
 
 	function sanitizeFilename(filename) {
 		return filename
-			.replace(/[/\\?%*:|"<>]/g, '-') // Replacing invalid characters with '-'
-			.replace(/(\.\.\/)|(\/\.\.)/g, '') // Removing directory traversal attempts
-			.substring(0, 255); // Limiting length to 255 characters
+			.replace(/[/\\?%*:|"<>]/g, '-')
+			.replace(/(\.\.\/)|(\/\.\.)/g, '')
+			.substring(0, 255);
 	}
 
 	function formatDateAndQueryString(queryString) {
-		// Format the current date and time
 		const now = new Date();
 		const dateStr = now.toLocaleDateString('en-GB', {
 			year: 'numeric',
@@ -77,11 +83,7 @@
 			hour: '2-digit',
 			minute: '2-digit'
 		});
-
-		// Format the query string
 		let queryParamsText = `Search Query:\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
-
-		// Return formatted date, time, and query string
 		return `Date: ${dateStr}, Time: ${timeStr}<br>${queryParamsText}`;
 	}
 </script>

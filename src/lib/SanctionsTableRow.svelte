@@ -25,3 +25,12 @@
         </button>
     </td>
 </tr>
+
+
+<!-- style the table rows to avoid breaking e.gc. page-break-inside: avoid; -->
+
+<style>
+    tr {
+        page-break-inside: avoid;
+    }
+</style>
