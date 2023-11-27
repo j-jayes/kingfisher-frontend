@@ -1,8 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
-	import { jsPDF } from 'jspdf';
-	import html2canvas from 'html2canvas';
-
 	export let pdfContainer;
 	export let loadingPDF;
 	export let queryString; // Accept the queryString prop
@@ -11,6 +7,11 @@
 		const headerContent = formatDateAndQueryString(queryString);
 		queryString = sanitizeFilename(queryString);
 		loadingPDF = true;
+
+		const externalStylesheets = [
+			'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css',
+			'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'
+		];
 
 		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
 		const css = extractCSS();
@@ -21,7 +22,7 @@
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ html: pdfContent, css })
+					body: JSON.stringify({ html: pdfContent, css, externalStylesheets })
 				}
 			);
 
