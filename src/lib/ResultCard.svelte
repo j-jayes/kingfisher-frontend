@@ -5,7 +5,7 @@
 	export let getColor;
 </script>
 
-<div class={`card mb-3 ${result.isConcerning ? 'bg-danger text-white' : ''}`}>
+<div class={`card mb-3 ${result.isConcerning ? 'border-danger' : ''}`}>
 	<div class="card-body position-relative">
 		<span class="text-secondary">{result.idCode}</span>
 		<h5 class="card-title">{result.title}</h5>
@@ -13,7 +13,7 @@
 		<p class="card-text mt-2">{result.snippet}</p>
 		<button
 			on:click={() => toggleConcern(index)}
-			class={`btn btn-sm btn-secondary position-absolute bottom-0 end-0 mb-2 me-2 ${
+			class={`btn btn-outline-secondary position-absolute bottom-0 end-0 mb-2 me-2 ${
 				result.isConcerning ? 'btn-light' : ''
 			}`}
 		>
