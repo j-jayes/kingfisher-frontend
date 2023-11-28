@@ -83,15 +83,15 @@
 	function getColor(engine) {
 		switch (engine) {
 			case 'bing':
-				return 'bg-primary';
+				return 'border-primary text-primary';
 			case 'yahoo':
-				return 'bg-success';
+				return 'border-success text-success';
 			case 'duckduckgo':
-				return 'bg-warning';
+				return 'border-warning text-warning';
 			case 'google':
-				return 'bg-danger';
+				return 'border-danger text-danger';
 			default:
-				return 'bg-secondary';
+				return 'border-secondary text-secondary';
 		}
 	}
 
