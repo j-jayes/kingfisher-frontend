@@ -16,6 +16,8 @@
 		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
 		const css = extractCSS();
 
+		console.log('css', css)
+
 		try {
 			const response = await fetch(
 				'https://us-central1-kingfisher-backend.cloudfunctions.net/generatePDF',
