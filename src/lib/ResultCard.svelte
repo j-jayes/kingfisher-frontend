@@ -31,4 +31,37 @@
 	.card {
 		page-break-inside: avoid;
 	}
+
+	@media print {
+		.card,
+		.btn,
+		.table,
+		.badge {
+			-webkit-print-color-adjust: exact;
+			color-adjust: exact;
+		}
+
+		.bg-danger {
+			background-color: #dc3545 !important;
+		}
+
+		.text-white {
+			color: #fff !important;
+		}
+
+		.bg-light {
+			background-color: #f8f9fa !important;
+		}
+
+		.btn-secondary {
+			background-color: #6c757d !important;
+			color: #fff !important;
+		}
+
+		.btn-light {
+			background-color: #f8f9fa !important;
+			color: #212529 !important;
+		}
+		/* Add other colors and styles as needed */
+	}
 </style>
