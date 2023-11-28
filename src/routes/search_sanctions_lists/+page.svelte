@@ -4,7 +4,7 @@
 	import SanctionsTable from '$lib/SanctionsTable.svelte';
 	import LoadingSpinner from '$lib/LoadingSpinner.svelte';
 	import ErrorAlert from '$lib/ErrorAlert.svelte';
-	import PDFDownloadButton from '$lib/PDFDownloadButtonTable.svelte';
+	import PDFDownloadButton from '$lib/PDFDownloadButton.svelte';
 
 	let currentDate = new Date().toLocaleString();
 	let name = '';
