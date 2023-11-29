@@ -8,6 +8,7 @@
 <tr class={result.isConcerning ? 'border-danger-row' : ''}>
 	<td>{result.code}</td>
 	<td>{result.entity_name}</td>
+	<td>{result.search_term}</td>
 	<td>{result.entity_type}</td>
 	<td>
 		{#if sanctionsListLinks[result.sanctions_list]}

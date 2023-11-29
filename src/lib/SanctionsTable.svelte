@@ -16,6 +16,7 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Search Term</th>
             <th>Entity Type</th>
             <th>Sanctions List</th>
             <th>Date of Birth</th>
