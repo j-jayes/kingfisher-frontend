@@ -30,6 +30,7 @@
 		on:input={handleInput}
 		min="50"
 		max="100"
+		step="5"
 		class="form-control-range"
 		id="thresholdSlider"
 	/>
