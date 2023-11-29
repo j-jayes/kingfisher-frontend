@@ -2,6 +2,7 @@
 	export let pdfContainer;
 	export let loadingPDF;
 	export let queryString; // Accept the queryString prop
+	export let comments
 
 	async function downloadPDF() {
 		const headerContent = formatDateAndQueryString(queryString);
@@ -13,7 +14,7 @@
 			'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'
 		];
 
-		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + pdfContainer.innerHTML;
+		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + `<div class="comments"><strong>Analyst Comments:</strong> ${comments}</div>` + pdfContainer.innerHTML ;
 		const css = extractCSS();
 
 		console.log('css', css)

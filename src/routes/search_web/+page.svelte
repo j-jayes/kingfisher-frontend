@@ -134,9 +134,22 @@
 			/>
 			<PDFDownloadButton {pdfContainer} {queryString} />
 		</div>
-		<div bind:this={pdfContainer} class="col-md-8">
-			<Comments {comments} {autoExpand} />
-			<ResultsList {results} {toggleConcern} {getColor} />
+		<div class="col-md-8">
+			<!-- Comments Textbox -->
+			<div class="mb-3">
+				<label for="analystComments" class="form-label">Analyst Comments:</label>
+				<textarea
+					id="analystComments"
+					bind:value={comments}
+					on:input={(e) => autoExpand(e.target)}
+					class="form-control"
+					rows="2"
+					placeholder="Enter your comments here..."
+				/>
+			</div>
+			<div bind:this={pdfContainer}>
+				<ResultsList {results} {toggleConcern} {getColor} />
+			</div>
 		</div>
 	</div>
 </div>

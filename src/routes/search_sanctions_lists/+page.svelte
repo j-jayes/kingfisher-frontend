@@ -26,8 +26,8 @@
 	const sanctionsListLinks = {
 		US: 'https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists',
 		UK: 'https://docs.fcdo.gov.uk/docs/UK-Sanctions-List.html',
-		EU: "https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions?locale=en",
-		"YALE-CELI": "https://www.yalerussianbusinessretreat.com"
+		EU: 'https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions?locale=en',
+		'YALE-CELI': 'https://www.yalerussianbusinessretreat.com'
 		// Add more in the future as needed, like:
 		// 'CA': 'https://example.com/canada-list',
 		// 'EU': 'https://example.com/eu-list',
@@ -103,10 +103,10 @@
 				<LoadingSpinner />
 			{/if}
 			<div>
-				<PDFDownloadButton {pdfContainer} {queryString} />
+				<PDFDownloadButton {pdfContainer} {queryString} {comments} />
 			</div>
 		</div>
-		<div bind:this={pdfContainer} class="col-md-8">
+		<div class="col-md-8">
 			<!-- Comments Textbox -->
 			<div class="mb-3">
 				<label for="analystComments" class="form-label">Analyst Comments:</label>
@@ -120,19 +120,21 @@
 				/>
 			</div>
 
-			<!-- Error Message -->
-			{#if errorMessage}
-				<ErrorAlert {errorMessage} />
-			{/if}
-
-			{#if !loading}
-				{#if results.length}
-					<SanctionsTable {results} {sanctionsListLinks} {toggleConcern} {reorderRows} />
-				{:else if searchInitiated}
-					<!-- Display "No Results" message only if a search has been initiated -->
-					<div class="alert alert-info" role="alert">No results.</div>
+			<div bind:this={pdfContainer}>
+				<!-- Error Message -->
+				{#if errorMessage}
+					<ErrorAlert {errorMessage} />
 				{/if}
-			{/if}
+
+				{#if !loading}
+					{#if results.length}
+						<SanctionsTable {results} {sanctionsListLinks} {toggleConcern} {reorderRows} />
+					{:else if searchInitiated}
+						<!-- Display "No Results" message only if a search has been initiated -->
+						<div class="alert alert-info" role="alert">No results.</div>
+					{/if}
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>
