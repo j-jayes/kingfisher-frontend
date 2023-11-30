@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import Navbar from '$lib/Navbar.svelte';
 	import SearchInput from '$lib/SearchInput.svelte';
-	import Comments from '$lib/Comments.svelte';
 	import ResultsList from '$lib/ResultsList.svelte';
 	import PDFDownloadButton from '$lib/PDFDownloadButton.svelte';
 
@@ -132,7 +131,7 @@
 				{loading}
 				on:inputChange={handleInputChange}
 			/>
-			<PDFDownloadButton {pdfContainer} {queryString} />
+			<PDFDownloadButton {pdfContainer} {queryString} {comments} />
 		</div>
 		<div class="col-md-8">
 			<!-- Comments Textbox -->

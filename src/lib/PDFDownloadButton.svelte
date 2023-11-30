@@ -14,7 +14,7 @@
 			'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'
 		];
 
-		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + `<div class="comments"><strong>Analyst Comments:</strong> ${comments}</div>` + pdfContainer.innerHTML ;
+		const pdfContent = `<div class="pdf-header">${headerContent}</div>` + `<div class="comments"><strong>Analyst Comments:</strong> ${comments}</div>` + `<br>` + pdfContainer.innerHTML ;
 		const css = extractCSS();
 
 		console.log('css', css)
@@ -87,8 +87,8 @@
 			hour: '2-digit',
 			minute: '2-digit'
 		});
-		let queryParamsText = `Search Query:\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
-		return `Date: ${dateStr}, Time: ${timeStr}<br>${queryParamsText}`;
+		let queryParamsText = `<strong>Search Query:</strong  >\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
+		return `<strong>Date:</strong> ${dateStr}, <strong>Time:</strong> ${timeStr}<br>${queryParamsText}`;
 	}
 </script>
 
