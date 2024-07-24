@@ -16,9 +16,6 @@
 					<button class="btn btn-lg btn-light mr-3" on:click={() => goto('/search_web')}
 						>Web Search</button
 					>
-					<button class="btn btn-lg btn-dark" on:click={() => goto('/search_sanctions_lists')}
-						>Sanctions List Search</button
-					>
 				</div>
 			</div>
 		</div>
@@ -35,11 +32,6 @@
 
 	.btn-light:hover {
 		background-color: #fda085 !important;
-		color: white !important;
-	}
-
-	.btn-dark:hover {
-		background-color: #343a40 !important; 
 		color: white !important;
 	}
 </style>

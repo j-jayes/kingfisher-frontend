@@ -20,7 +20,7 @@
 		id="navbarNav"
 	>
 		<ul class="navbar-nav">
-			{#each [{ path: '/', label: 'Home' }, { path: '/search_sanctions_lists', label: 'Search Sanctions Lists' }, { path: '/search_web', label: 'Search Web' }, { path: '/about', label: 'About' }, { path: '/contact', label: 'Contact' }] as { path, label }}
+			{#each [{ path: '/', label: 'Home' }, { path: '/search_web', label: 'Search Web' }] as { path, label }}
 				<li class="nav-item {$page.path === path ? 'active' : ''}">
 					<a class="nav-link" href={path} on:click|preventDefault={() => goto(path)}>{label}</a>
 				</li>
