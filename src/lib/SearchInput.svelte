@@ -34,22 +34,6 @@
             placeholder="Enter name..."
         />
     </div>
-	<div class="mb-3">
-		<label class="form-label">Modifiers:</label>
-		{#each modifiers as modifier (modifier.value)}
-			<div class="form-check">
-				<input
-					class="form-check-input"
-					type="checkbox"
-					bind:checked={modifier.checked}
-					id={modifier.value}
-				/>
-				<label class="form-check-label" for={modifier.value}>
-					{modifier.label}
-				</label>
-			</div>
-		{/each}
-	</div>
     <div class="mb-3">
         <label for="additionalSearchTermsInput" class="form-label">Additional Search Terms:</label>
         <input
@@ -63,7 +47,7 @@
     </div>
 	<div>
 		<button class="btn btn-primary" on:click={fetchData}>Search</button>
-		<button on:click={reorderRows} class="btn btn-secondary">Move concerning cards to top</button>
+		<button on:click={reorderRows} class="btn btn-secondary">Move red cards to top</button>
 	</div>
 	{#if loading}
 		<div class="mt-3 d-flex justify-content-center">

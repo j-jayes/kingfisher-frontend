@@ -15,44 +15,17 @@
 	let loadingPDF = false;
 	let queryString = '';
 
-	let modifiers = [
-		{ label: 'Fraud', value: 'fraud', checked: false },
-		{ label: 'Crime', value: 'crime', checked: false },
-		{ label: 'FCA', value: 'FCA', checked: false },
-		{ label: 'SEC', value: 'SEC', checked: false },
-		{ label: 'Money-laundering', value: 'money-laundering', checked: false },
-		{ label: 'Terrorist', value: 'terrorist', checked: false },
-		{ label: 'Corruption', value: 'corruption', checked: false },
-		{ label: 'PEP', value: 'Politically Exposed Person', checked: false },
-		{ label: 'Prosecution', value: 'prosecution', checked: false },
-		{ label: 'Penalty', value: 'penalty', checked: false }
-		// ... (continue in this manner for all the modifiers)
-	];
-
-	$: {
-		// Create a string representing the search query
-		let modifierQuery = modifiers
-			.filter((m) => m.checked)
-			.map((m) => m.value)
-			.join(',');
-		queryString = `name=${name}${
-			modifierQuery ? '&modifier=' + modifierQuery : ''
-		}&additional_info=${additional_search_terms}`;
-	}
+	let queryString = '';
 
 	async function fetchData() {
 		loading = true;
 
-		// Collect selected modifiers
-		let selectedModifiers = modifiers.filter((m) => m.checked).map((m) => m.value);
-		let modifierQuery = selectedModifiers.join(' OR ');
-
 		try {
 			// Construct the fetch URL using the updated modifierQuery
 			const encodedName = encodeURIComponent(`"${name}"`); // Enclose name in quotes and encode
-			const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${encodedName}${
-				modifierQuery ? '&modifier=' + modifierQuery : ''
-			}&additional_info=${additional_search_terms}`;
+			const encodedAdditionalInfo = encodeURIComponent(additional_search_terms); // Encode additional info
+			const queryString = `name=${encodedName}&additional_info=${encodedAdditionalInfo}`;
+			const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?${queryString}`;
 
 			const response = await fetch(url);
 
