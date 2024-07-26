@@ -1,17 +1,14 @@
-import { c as create_ssr_component, d as createEventDispatcher, f as add_attribute, g as each, e as escape, h as null_to_empty, v as validate_component } from "../../../chunks/index.js";
+import { c as create_ssr_component, d as createEventDispatcher, f as add_attribute, e as escape, g as null_to_empty, h as each, v as validate_component } from "../../../chunks/index.js";
 import { N as Navbar } from "../../../chunks/Navbar.js";
 const SearchInput = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   createEventDispatcher();
   let { name } = $$props;
-  let { modifiers } = $$props;
   let { additional_search_terms } = $$props;
   let { fetchData } = $$props;
   let { reorderRows } = $$props;
   let { loading } = $$props;
   if ($$props.name === void 0 && $$bindings.name && name !== void 0)
     $$bindings.name(name);
-  if ($$props.modifiers === void 0 && $$bindings.modifiers && modifiers !== void 0)
-    $$bindings.modifiers(modifiers);
   if ($$props.additional_search_terms === void 0 && $$bindings.additional_search_terms && additional_search_terms !== void 0)
     $$bindings.additional_search_terms(additional_search_terms);
   if ($$props.fetchData === void 0 && $$bindings.fetchData && fetchData !== void 0)
@@ -22,16 +19,10 @@ const SearchInput = create_ssr_component(($$result, $$props, $$bindings, slots) 
     $$bindings.loading(loading);
   return `<div class="bg-light sidebar p-3"><div class="mb-3"><label for="nameInput" class="form-label">Search Name:</label>
         <input type="text"${add_attribute("value", name, 0)} class="form-control" id="nameInput" placeholder="Enter name..."></div>
-	<div class="mb-3"><label class="form-label">Modifiers:</label>
-		${each(modifiers, (modifier) => {
-    return `<div class="form-check"><input class="form-check-input" type="checkbox"${add_attribute("id", modifier.value, 0)}${add_attribute("checked", modifier.checked, 1)}>
-				<label class="form-check-label"${add_attribute("for", modifier.value, 0)}>${escape(modifier.label)}</label>
-			</div>`;
-  })}</div>
     <div class="mb-3"><label for="additionalSearchTermsInput" class="form-label">Additional Search Terms:</label>
         <input type="text"${add_attribute("value", additional_search_terms, 0)} class="form-control" id="additionalSearchTermsInput" placeholder="Enter additional search terms..."></div>
 	<div><button class="btn btn-primary">Search</button>
-		<button class="btn btn-secondary">Move concerning cards to top</button></div>
+		<button class="btn btn-secondary">Move red cards to top</button></div>
 	${loading ? `<div class="mt-3 d-flex justify-content-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>` : ``}</div>`;
 });
 const ResultCard_svelte_svelte_type_style_lang = "";
@@ -85,14 +76,14 @@ const css$1 = {
 const PDFDownloadButton = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { pdfContainer } = $$props;
   let { loadingPDF } = $$props;
-  let { queryString } = $$props;
+  let { queryString: queryString2 } = $$props;
   let { comments } = $$props;
   if ($$props.pdfContainer === void 0 && $$bindings.pdfContainer && pdfContainer !== void 0)
     $$bindings.pdfContainer(pdfContainer);
   if ($$props.loadingPDF === void 0 && $$bindings.loadingPDF && loadingPDF !== void 0)
     $$bindings.loadingPDF(loadingPDF);
-  if ($$props.queryString === void 0 && $$bindings.queryString && queryString !== void 0)
-    $$bindings.queryString(queryString);
+  if ($$props.queryString === void 0 && $$bindings.queryString && queryString2 !== void 0)
+    $$bindings.queryString(queryString2);
   if ($$props.comments === void 0 && $$bindings.comments && comments !== void 0)
     $$bindings.comments(comments);
   $$result.css.add(css$1);
@@ -102,6 +93,7 @@ const PDFDownloadButton = create_ssr_component(($$result, $$props, $$bindings, s
 	<div class="loading-text svelte-ed392d">Preparing PDF...</div>
 </div>`;
 });
+let queryString = "";
 function getColor(engine) {
   switch (engine) {
     case "bing":
@@ -132,66 +124,13 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let comments = "";
   (/* @__PURE__ */ new Date()).toLocaleString();
   let pdfContainer;
-  let queryString = "";
-  let modifiers = [
-    {
-      label: "Fraud",
-      value: "fraud",
-      checked: false
-    },
-    {
-      label: "Crime",
-      value: "crime",
-      checked: false
-    },
-    {
-      label: "FCA",
-      value: "FCA",
-      checked: false
-    },
-    {
-      label: "SEC",
-      value: "SEC",
-      checked: false
-    },
-    {
-      label: "Money-laundering",
-      value: "money-laundering",
-      checked: false
-    },
-    {
-      label: "Terrorist",
-      value: "terrorist",
-      checked: false
-    },
-    {
-      label: "Corruption",
-      value: "corruption",
-      checked: false
-    },
-    {
-      label: "PEP",
-      value: "Politically Exposed Person",
-      checked: false
-    },
-    {
-      label: "Prosecution",
-      value: "prosecution",
-      checked: false
-    },
-    {
-      label: "Penalty",
-      value: "penalty",
-      checked: false
-    }
-  ];
   async function fetchData() {
     loading = true;
-    let selectedModifiers = modifiers.filter((m) => m.checked).map((m) => m.value);
-    let modifierQuery = selectedModifiers.join(" OR ");
     try {
       const encodedName = encodeURIComponent(`"${name}"`);
-      const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?name=${encodedName}${modifierQuery ? "&modifier=" + modifierQuery : ""}&additional_info=${additional_search_terms}`;
+      const encodedAdditionalInfo = encodeURIComponent(additional_search_terms);
+      const queryString2 = `name=${encodedName}&additional_info=${encodedAdditionalInfo}`;
+      const url = `https://fastapi-project-njro5od4ga-nw.a.run.app/search_web?${queryString2}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
@@ -214,19 +153,12 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   function reorderRows() {
     results = results.sort((a, b) => (b.isConcerning ? 1 : 0) - (a.isConcerning ? 1 : 0));
   }
-  {
-    {
-      let modifierQuery = modifiers.filter((m) => m.checked).map((m) => m.value).join(",");
-      queryString = `name=${name}${modifierQuery ? "&modifier=" + modifierQuery : ""}&additional_info=${additional_search_terms}`;
-    }
-  }
   return `${validate_component(Navbar, "Navbar").$$render($$result, {}, {}, {})}
 
 <div class="container mt-5"><div class="row"><div class="col-md-4">${validate_component(SearchInput, "SearchInput").$$render(
     $$result,
     {
       name,
-      modifiers,
       additional_search_terms,
       fetchData,
       reorderRows,

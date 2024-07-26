@@ -4,7 +4,6 @@
 	const dispatch = createEventDispatcher();
 
 	export let name;
-	export let modifiers;
 	export let additional_search_terms;
 	export let fetchData;
 	export let reorderRows;

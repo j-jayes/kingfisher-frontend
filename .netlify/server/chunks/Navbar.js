@@ -1,4 +1,4 @@
-import { c as create_ssr_component, b as subscribe, e as escape, h as null_to_empty, g as each, f as add_attribute } from "./index.js";
+import { c as create_ssr_component, b as subscribe, e as escape, g as null_to_empty, h as each, f as add_attribute } from "./index.js";
 import { p as page } from "./stores.js";
 const Navbar_svelte_svelte_type_style_lang = "";
 const css = {

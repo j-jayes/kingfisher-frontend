@@ -15,8 +15,6 @@
 	let loadingPDF = false;
 	let queryString = '';
 
-	let queryString = '';
-
 	async function fetchData() {
 		loading = true;
 
@@ -97,7 +95,6 @@
 		<div class="col-md-4">
 			<SearchInput
 				{name}
-				{modifiers}
 				{additional_search_terms}
 				{fetchData}
 				{reorderRows}
