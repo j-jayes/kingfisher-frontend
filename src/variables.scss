@@ -1,3 +1,6 @@
+/* Import the chosen font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
 /* Variables and mixins declared here will be available in all other SCSS files */
 @import 'bootstrap/scss/functions'; /* Override Bootstrap's variables here */
 @import 'bootstrap/scss/variables';
@@ -6,6 +9,12 @@
 @import 'bootstrap/scss/mixins';
 @import 'bootstrap/scss/utilities';
 
+/* Override Bootstrap's default font with your chosen font */
+$font-family-base: 'Inter', sans-serif;
+$font-family-sans-serif: 'Inter', sans-serif;
+$font-family-monospace: 'Courier New', monospace;  /* Or another monospace font */
+
+/* Primary color override */
 $primary: #191970;
 
 @media print {

@@ -17,7 +17,7 @@
 				result.isConcerning ? 'btn-light' : ''
 			}`}
 		>
-			{result.isConcerning ? 'Mark Normal' : 'Mark Concerning'}
+			{result.isConcerning ? 'Unflag' : 'Flag'}
 		</button>
 	</div>
 	<div class="card-footer bg-light">

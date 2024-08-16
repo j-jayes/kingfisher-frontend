@@ -46,7 +46,7 @@
     </div>
 	<div>
 		<button class="btn btn-primary" on:click={fetchData}>Search</button>
-		<button on:click={reorderRows} class="btn btn-secondary">Move red cards to top</button>
+		<button on:click={reorderRows} class="btn btn-secondary">Move flagged cards to top</button>
 	</div>
 	{#if loading}
 		<div class="mt-3 d-flex justify-content-center">

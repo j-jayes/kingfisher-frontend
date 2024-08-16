@@ -104,18 +104,20 @@
 			<PDFDownloadButton {pdfContainer} {queryString} {comments} />
 		</div>
 		<div class="col-md-8">
-			<!-- Comments Textbox -->
-			<div class="mb-3">
-				<label for="analystComments" class="form-label">Analyst Comments:</label>
-				<textarea
-					id="analystComments"
-					bind:value={comments}
-					on:input={(e) => autoExpand(e.target)}
-					class="form-control"
-					rows="2"
-					placeholder="Enter your comments here..."
-				/>
-			</div>
+			{#if results.length > 0}  <!-- This block checks if there are any results -->
+				<!-- Comments Textbox -->
+				<div class="mb-3">
+					<label for="analystComments" class="form-label">Analyst Comments:</label>
+					<textarea
+						id="analystComments"
+						bind:value={comments}
+						on:input={(e) => autoExpand(e.target)}
+						class="form-control"
+						rows="2"
+						placeholder="Enter your comments here..."
+					/>
+				</div>
+			{/if}
 			<div bind:this={pdfContainer}>
 				<ResultsList {results} {toggleConcern} {getColor} />
 			</div>

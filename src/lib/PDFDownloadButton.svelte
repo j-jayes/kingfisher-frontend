@@ -5,6 +5,7 @@
 	export let comments
 
 	async function downloadPDF() {
+		console.log('queryString before formatting:', queryString);  // Debugging line
 		const headerContent = formatDateAndQueryString(queryString);
 		queryString = sanitizeFilename(queryString);
 		loadingPDF = true;
@@ -88,6 +89,9 @@
 			minute: '2-digit'
 		});
 		let queryParamsText = `<strong>Search Query:</strong  >\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
+		
+		console.log('Formatted query string:', queryParamsText);  // Debugging line
+
 		return `<strong>Date:</strong> ${dateStr}, <strong>Time:</strong> ${timeStr}<br>${queryParamsText}`;
 	}
 </script>
