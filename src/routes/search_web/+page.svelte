@@ -101,7 +101,7 @@
 				{loading}
 				on:inputChange={handleInputChange}
 			/>
-			<PDFDownloadButton {pdfContainer} {queryString} {comments} />
+			<PDFDownloadButton {pdfContainer} {queryString} {comments} {name} {additional_search_terms} />
 		</div>
 		<div class="col-md-8">
 			{#if results.length > 0}  <!-- This block checks if there are any results -->

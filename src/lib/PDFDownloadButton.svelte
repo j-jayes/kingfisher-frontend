@@ -2,12 +2,14 @@
 	export let pdfContainer;
 	export let loadingPDF;
 	export let queryString; // Accept the queryString prop
-	export let comments
+	export let comments;
+	export let name; // Accept the name prop
+	export let additional_search_terms; // Accept the additional search terms prop
 
 	async function downloadPDF() {
 		console.log('queryString before formatting:', queryString);  // Debugging line
-		const headerContent = formatDateAndQueryString(queryString);
-		queryString = sanitizeFilename(queryString);
+		const headerContent = formatDateAndQueryString(queryString, name, additional_search_terms);
+		const safeQueryString = sanitizeFilename(`${name}_${additional_search_terms}`);
 		loadingPDF = true;
 
 		const externalStylesheets = [
@@ -33,7 +35,7 @@
 			if (response.ok) {
 				const blob = await response.blob();
 				const url = window.URL.createObjectURL(blob);
-				const filename = `Alcedo-${queryString}.pdf`; // Ensure queryString is safe to use
+				const filename = `Alcedo-${safeQueryString}.pdf`; // Ensure queryString is safe to use
 
 				const a = document.createElement('a');
 				a.href = url;
@@ -77,7 +79,7 @@
 			.substring(0, 255);
 	}
 
-	function formatDateAndQueryString(queryString) {
+	function formatDateAndQueryString(queryString, name, additional_search_terms) {
 		const now = new Date();
 		const dateStr = now.toLocaleDateString('en-GB', {
 			year: 'numeric',
@@ -88,7 +90,7 @@
 			hour: '2-digit',
 			minute: '2-digit'
 		});
-		let queryParamsText = `<strong>Search Query:</strong  >\n${queryString.replace(/&/g, '\n').replace(/=/g, ': ')}`;
+		let queryParamsText = `<strong>Search Query:</strong> Name: ${name}, Additional Terms: ${additional_search_terms}`;
 		
 		console.log('Formatted query string:', queryParamsText);  // Debugging line
 
